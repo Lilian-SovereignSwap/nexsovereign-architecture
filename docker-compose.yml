@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: timescale/timescaledb:latest-pg15
+    container_name: nexsovereign_db
+    environment:
+      POSTGRES_USER: nex_admin
+      POSTGRES_PASSWORD: secure_password_123
+      POSTGRES_DB: nexsovereign_telemetry
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nex_admin -d nexsovereign_telemetry"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  mqtt_broker:
+    image: eclipse-mosquitto:latest
+    container_name: nexsovereign_mqtt
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - ./mosquitto/config:/mosquitto/config
+
+  api:
+    build: .
+    container_name: nexsovereign_api
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://nex_admin:secure_password_123@postgres:5432/nexsovereign_telemetry
+      - MQTT_BROKER_HOST=mqtt_broker
+      - MQTT_BROKER_PORT=1883
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  pgdata:
