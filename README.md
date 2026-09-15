@@ -1,5 +1,8 @@
 # nexsovereign-architecture
-System architecture, API specifications, and Docker deployment stack for the NexSovereign IIoT Pipeline Monitoring MVP.
+System architecture, API specifications, and Docker deployment stack for the Ne
+# NexSovereign IIoT Pipeline Security MVP
+
+1. Directory Blueprint
 nexsovereign-backend/
 ├── docker-compose.yml
 ├── mosquitto/
@@ -8,12 +11,5 @@ nexsovereign-backend/
 ├── database/
 │   └── init.sql
 ├── app/
-│   ├── init.py
-│   ├── main.py
-│   ├── config.py
-│   ├── db.py
-│   ├── models.py
-│   ├── schemas.py
-│   ├── mqtt_client.py
-│   └── websocket_manager.py
+│   └── main.py
 └── requirements.txt
